@@ -1,0 +1,6 @@
+# dependencies
+node_modules
+nodemon.json
+
+# misc
+.DS_Store
