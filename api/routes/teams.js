@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 
 const Team = require("../models/team");
 
+// Get all, http://localhost:4000/teams
 router.get("/", (req, res, next) => {
   Team.find()
     .exec()
@@ -19,11 +20,11 @@ router.get("/", (req, res, next) => {
     });
 });
 
+// Add, http://localhost:4000/teams
 router.post("/", (req, res, next) => {
   const team = new Team({
     _id: new mongoose.Types.ObjectId(),
-    name: req.body.name,
-    price: req.body.price
+    team: req.body.team
   });
   team
     .save()
@@ -42,8 +43,9 @@ router.post("/", (req, res, next) => {
     });
 });
 
-router.get("/:teamId", (req, res, next) => {
-  const id = req.params.teamId;
+// Get 1 Item, http://localhost:4000/teams/5e71018886d2131311ce2cde
+router.get("/:id", (req, res, next) => {
+  const id = req.params.id;
   Team.findById(id)
     .exec()
     .then(doc => {
@@ -62,13 +64,11 @@ router.get("/:teamId", (req, res, next) => {
     });
 });
 
-router.patch("/:teamId", (req, res, next) => {
-  const id = req.params.teamId;
-  const updateOps = {};
-  for (const ops of req.body) {
-    updateOps[ops.propName] = ops.value;
-  }
-  Team.update({ _id: id }, { $set: updateOps })
+// Update, http://localhost:4000/teams/5e71018886d2131311ce2cde
+router.patch("/:id", (req, res, next) => {
+  const id = req.params.id;
+  console.log('UpdateOps:::::', updateOps);
+  Team.update({ _id: id }, { $set: req.body })
     .exec()
     .then(result => {
       console.log(result);
@@ -82,8 +82,9 @@ router.patch("/:teamId", (req, res, next) => {
     });
 });
 
-router.delete("/:teamId", (req, res, next) => {
-  const id = req.params.teamId;
+// Delete, http://localhost:4000/teams/5e71018886d2131311ce2cde
+router.delete("/:id", (req, res, next) => {
+  const id = req.params.id;
   Team.remove({ _id: id })
     .exec()
     .then(result => {

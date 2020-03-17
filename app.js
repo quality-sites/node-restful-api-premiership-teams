@@ -7,7 +7,8 @@ const teamRoutes = require("./api/routes/teams");
 const playerRoutes = require("./api/routes/players");
 
 mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://"+process.env.MONGO_USERNAME+":"+process.env.MONGO_PASSWORD+"@premiership-shard-00-00-6o4uj.mongodb.net:27017,premiership-shard-00-01-6o4uj.mongodb.net:27017,premiership-shard-00-02-6o4uj.mongodb.net:27017/test?ssl=true&replicaSet=premiership-shard-0&authSource=admin&retryWrites=true&w=majority").catch((error) => console.log(JSON.stringify(error)));
+mongoose.connect("mongodb://localhost/premiership");
+//mongoose.connect("mongodb://"+process.env.MONGO_USERNAME+":"+process.env.MONGO_PASSWORD+"@premiership-shard-00-00-6o4uj.mongodb.net:27017,premiership-shard-00-01-6o4uj.mongodb.net:27017,premiership-shard-00-02-6o4uj.mongodb.net:27017/test?ssl=true&replicaSet=premiership-shard-0&authSource=admin&retryWrites=true&w=majority").catch((error) => console.log(JSON.stringify(error)));
 
 app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));

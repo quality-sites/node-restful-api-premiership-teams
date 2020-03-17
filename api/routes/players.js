@@ -1,35 +1,101 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 
-// Handle incoming GET requests to /players
-router.get('/', (req, res, next) => {
-    res.status(200).json({
-        message: 'Players were fetched'
+const Player = require("../models/player");
+
+// Get all, http://localhost:4000/players
+router.get("/", (req, res, next) => {
+  Player.find()
+    .exec()
+    .then(docs => {
+      console.log(docs);
+      res.status(200).json(docs);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({
+        error: err
+      });
     });
 });
 
-router.post('/', (req, res, next) => {
-    const player = {
-        teamId: req.body.teamId,
-        quantity: req.body.quantity
-    };
-    res.status(201).json({
-        message: 'Player was created',
-        player: player
+// Add, http://localhost:4000/players
+router.post("/", (req, res, next) => {
+  const player = new Player({
+    _id: new mongoose.Types.ObjectId(),
+    team: req.body.team,
+    firstname: req.body.firstname,
+    surname: req.body.surname
+  });
+  player
+    .save()
+    .then(result => {
+      console.log(result);
+      res.status(201).json({
+        message: "Handling POST requests to /teams",
+        createdTeam: result
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({
+        error: err
+      });
     });
 });
 
-router.get('/:playerId', (req, res, next) => {
-    res.status(200).json({
-        message: 'Player details',
-        playerId: req.params.playerId
+// Get 1 Item, http://localhost:4000/players/5e70d431d369bc53101e183d
+router.get("/:id", (req, res, next) => {
+  const id = req.params.id;
+  Player.findById(id)
+    .exec()
+    .then(doc => {
+      console.log("From database", doc);
+      if (doc) {
+        res.status(200).json(doc);
+      } else {
+        res
+          .status(404)
+          .json({ message: "No valid entry found for provided ID" });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: err });
     });
 });
 
-router.delete('/:playerId', (req, res, next) => {
-    res.status(200).json({
-        message: 'Player deleted',
-        playerId: req.params.playerId
+// Update, http://localhost:4000/players/5e70d431d369bc53101e183d
+router.patch("/:id", (req, res, next) => {
+  const id = req.params.id;
+  Player.update({ _id: id }, { $set: req.body })
+    .exec()
+    .then(result => {
+      console.log(result);
+      res.status(200).json(result);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({
+        error: err
+      });
+    });
+});
+
+// Delete, http://localhost:4000/players/5e70d431d369bc53101e183d
+router.delete("/:id", (req, res, next) => {
+  const id = req.params.id;
+  Player.remove({ _id: id })
+    .exec()
+    .then(result => {
+      res.status(200).json(result);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({
+        error: err
+      });
     });
 });
 
