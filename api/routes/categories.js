@@ -2,14 +2,15 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 
-const Player = require("../models/player");
+const Categories = require("../models/categories");
 
-// Get all, http://localhost:4000/players
+// Get all, http://localhost:4000/categories
 router.get("/", (req, res, next) => {
-  Player.find()
+  Categories.find()
+    .populate('categories')
     .exec()
     .then(docs => {
-      console.log(docs);
+      console.log('Docccss', docs);
       res.status(200).json(docs);
     })
     .catch(err => {
@@ -20,21 +21,20 @@ router.get("/", (req, res, next) => {
     });
 });
 
-// Add, http://localhost:4000/players
+// Add, http://localhost:4000/categories
 router.post("/", (req, res, next) => {
-  const player = new Player({
+  const category = new Categories({
     _id: new mongoose.Types.ObjectId(),
-    team: req.body.team,
-    firstname: req.body.firstname,
-    surname: req.body.surname
+    category: req.body.category,
+    parentCategory: req.body.parentCategory
   });
-  player
+  category
     .save()
     .then(result => {
       console.log(result);
       res.status(201).json({
-        message: "Handling POST requests to /teams",
-        createdTeam: result
+        message: "Handling POST requests to /categories",
+        createdCategory: result
       });
     })
     .catch(err => {
@@ -45,10 +45,10 @@ router.post("/", (req, res, next) => {
     });
 });
 
-// Get 1 Item, http://localhost:4000/players/5e70d431d369bc53101e183d
+// Get 1 Item, http://localhost:4000/categories/5e70d431d369bc53101e183d
 router.get("/:id", (req, res, next) => {
   const id = req.params.id;
-  Player.findById(id)
+  Categories.findById(id)
     .exec()
     .then(doc => {
       console.log("From database", doc);
@@ -66,10 +66,10 @@ router.get("/:id", (req, res, next) => {
     });
 });
 
-// Update, http://localhost:4000/players/5e70d431d369bc53101e183d
+// Update, http://localhost:4000/categories/5e70d431d369bc53101e183d
 router.patch("/:id", (req, res, next) => {
   const id = req.params.id;
-  Player.update({ _id: id }, { $set: req.body })
+  Categories.updateOne({ _id: id }, { $set: req.body })
     .exec()
     .then(result => {
       console.log(result);
@@ -83,10 +83,10 @@ router.patch("/:id", (req, res, next) => {
     });
 });
 
-// Delete, http://localhost:4000/players/5e70d431d369bc53101e183d
+// Delete, http://localhost:4000/categories/5e70d431d369bc53101e183d
 router.delete("/:id", (req, res, next) => {
   const id = req.params.id;
-  Player.remove({ _id: id })
+  Categories.remove({ _id: id })
     .exec()
     .then(result => {
       res.status(200).json(result);
